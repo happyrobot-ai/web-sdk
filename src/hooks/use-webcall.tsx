@@ -71,6 +71,10 @@ export const ProvideWebCall = ({ children }: Props) => {
     const room = new Room({
       adaptiveStream: true,
       dynacast: true,
+      audioCaptureDefaults: {
+        echoCancellation: true,
+        noiseSuppression: false,
+      },
     });
 
     // Enable mic
