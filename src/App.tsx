@@ -1,3 +1,4 @@
+import CustomComponent from "./CustomComponent";
 import { useWebCall } from "./hooks/use-webcall";
 
 const ORGANIZATION_ID = "your_org_id";
@@ -5,6 +6,11 @@ const USE_CASE_ID = "your_use_case_id";
 
 function App() {
   const { startCall, endCall, isCallOngoing } = useWebCall();
+
+  // If pathname is /custom, return custom component
+  if (window.location.pathname === "/custom") {
+    return <CustomComponent />;
+  }
 
   const start = () => {
     // Get from somewhere else

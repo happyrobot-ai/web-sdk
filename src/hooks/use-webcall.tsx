@@ -17,6 +17,7 @@ export interface LivekitOptions {
 interface UseWebCallContextSchema {
   isCallOngoing: boolean;
   startCall?: (organizationId: string, useCaseId: string) => Promise<void>;
+  joinCall?: (liveKitUrl: string, token: string) => Promise<void>;
   endCall?: () => Promise<void>;
 }
 
@@ -27,11 +28,11 @@ export const WebCallContext = createContext<UseWebCallContextSchema>({
 });
 
 export const useWebCall = () => {
-  const { isCallOngoing, startCall, endCall } = useContext(WebCallContext);
-  if (startCall === undefined || endCall === undefined) {
+  const { isCallOngoing, startCall, joinCall, endCall } = useContext(WebCallContext);
+  if (startCall === undefined || endCall === undefined || joinCall === undefined) {
     throw new Error("useWebCall must be used within a ProvideWebCall");
   }
-  return { isCallOngoing, startCall, endCall };
+  return { isCallOngoing, startCall, joinCall, endCall };
 };
 
 interface Props {
@@ -69,8 +70,13 @@ export const ProvideWebCall = ({ children }: Props) => {
   const connect = async (options: LivekitOptions) => {
     // creates a new room with options
     const room = new Room({
-      adaptiveStream: true,
-      dynacast: true,
+      audioCaptureDefaults: {
+        echoCancellation: true,
+        noiseSuppression: false,
+      },
+      publishDefaults: {
+        dtx: false,
+      }
     });
 
     // Enable mic
@@ -118,6 +124,11 @@ export const ProvideWebCall = ({ children }: Props) => {
     await connect(options);
   };
 
+  const joinCall = async (liveKitUrl: string, token: string) => {
+    // Connect to room
+    await connect({ url: liveKitUrl, token });
+  };
+
   const endCall = async () => {
     if (room) {
       await room.disconnect();
@@ -129,6 +140,7 @@ export const ProvideWebCall = ({ children }: Props) => {
       value={{
         isCallOngoing,
         startCall,
+        joinCall,
         endCall,
       }}
     >
