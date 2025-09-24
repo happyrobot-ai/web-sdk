@@ -114,7 +114,7 @@ export const ProvideWebCall = ({ children }: Props) => {
       "https://v2.platform.happyrobot.ai";
 
     // Get access token from happyrobot backend
-    const response = await fetch(`${host}/api/token`, {
+    const response = await fetch(`${host}/api/webcall-tokens`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -125,7 +125,7 @@ export const ProvideWebCall = ({ children }: Props) => {
         use_case_id: useCaseId,
         // Your params defined in the workflow's webcall node here
         data: {
-          // name: "John Doe",
+          name: "John Doe",
           // "email": "john.doe@example.com",
         },
       }),
