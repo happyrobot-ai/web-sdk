@@ -110,16 +110,25 @@ export const ProvideWebCall = ({ children }: Props) => {
     // Api key and host from env
     const api_key = import.meta.env.VITE_HAPPYROBOT_API_KEY;
     const host =
-      import.meta.env.VITE_HAPPYROBOT_URL || "https://platform.happyrobot.ai";
+      import.meta.env.VITE_HAPPYROBOT_URL ||
+      "https://v2.platform.happyrobot.ai";
 
     // Get access token from happyrobot backend
-    const response = await fetch(`${host}/api/token/${useCaseId}`, {
-      method: "GET",
+    const response = await fetch(`${host}/api/token`, {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
         "x-organization-id": organizationId,
         Authorization: `Bearer ${api_key}`,
       },
+      body: JSON.stringify({
+        use_case_id: useCaseId,
+        // Your params defined in the workflow's webcall node here
+        data: {
+          // name: "John Doe",
+          // "email": "john.doe@example.com",
+        },
+      }),
     });
     if (!response.ok) {
       throw new Error("Failed to get access token");
